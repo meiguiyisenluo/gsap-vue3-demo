@@ -1,0 +1,13 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body,
+html {
+  font-family: PingFangSC-Medium,
+    PingFang SC,
+    serif;
+  width: 100vw;
+  overflow-x: hidden;
+}
