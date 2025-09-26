@@ -5,18 +5,18 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/home'
+      redirect: '/home',
     },
     {
       path: '/home',
       name: 'home',
-      component: () => import('@/views/HomeView.vue')
+      component: () => import('@/views/HomeView.vue'),
     },
     {
       path: '/ScrollFade',
       name: 'ScrollFade',
-      component: () => import('@/views/ScrollFade.vue')
-    }
+      component: () => import('@/views/ScrollFade.vue'),
+    },
   ],
 })
 
