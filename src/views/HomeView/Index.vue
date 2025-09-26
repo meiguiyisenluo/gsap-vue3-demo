@@ -98,6 +98,7 @@ onMounted(() => {
   width: 100vw;
   height: 100vh;
 
+  background-position-x: center;
   background-size: cover;
   background-repeat: no-repeat;
 
