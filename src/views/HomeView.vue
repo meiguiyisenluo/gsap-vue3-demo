@@ -3,13 +3,17 @@
     v-for="(item, index) in 5"
     :key="index"
     :class="`container container${item}`"
-    :ref="(el) => (containers[index] = el)"
+    :ref="(el) => (containers[index] = el as HTMLDivElement)"
   >
     <p>{{ 'container' + item }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: 'HomeView',
+})
+
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
