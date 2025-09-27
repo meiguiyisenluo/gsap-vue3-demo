@@ -6,6 +6,7 @@
     :ref="(el) => (containers[index] = el as HTMLDivElement)"
     :style="{
       backgroundImage: `url(${item.src})`,
+      height: `${lockedWindowInnerHeight}px`,
     }"
   >
     <p>{{ item.text }}</p>
@@ -50,9 +51,14 @@ const imageList = [
 ]
 
 import { onMounted } from 'vue'
+const onMountedP = new Promise((resolve) => onMounted(resolve))
+
+// 锁定window.innerHeight
+const lockedWindowInnerHeight = window.innerHeight
 const containers: HTMLDivElement[] = []
-onMounted(() => {
-  for (const i in containers) {
+const initGsap = async () => {
+  await onMountedP
+  for (let i = 0; i < containers.length; i++) {
     const container = containers[i]
     if (!container) continue
     // const p = container.querySelector('p')
@@ -60,7 +66,7 @@ onMounted(() => {
 
     // gsap.to(p, {
     //   ease: 'none',
-    //   y: window.innerHeight - height,
+    //   y: lockedWindowInnerHeight - height,
     //   scrollTrigger: {
     //     trigger: container,
     //     scrub: true,
@@ -69,14 +75,14 @@ onMounted(() => {
     //   },
     // })
 
-    if (i !== '0') {
+    if (i !== 0) {
       gsap.fromTo(
         container,
         {
-          backgroundPositionY: `-${window.innerHeight / 2}px`,
+          backgroundPositionY: `-${lockedWindowInnerHeight / 2}px`,
         },
         {
-          backgroundPositionY: `${window.innerHeight / 2}px`,
+          backgroundPositionY: `${lockedWindowInnerHeight / 2}px`,
           ease: 'none',
           scrollTrigger: {
             trigger: container,
@@ -88,6 +94,15 @@ onMounted(() => {
       )
     }
   }
+}
+initGsap()
+
+import { useDebounceFn, useEventListener } from '@vueuse/core'
+const refreshScrollTrigger = useDebounceFn(() => {
+  ScrollTrigger.refresh()
+}, 1000)
+onMounted(() => {
+  useEventListener(window, 'resize', refreshScrollTrigger)
 })
 </script>
 
@@ -96,7 +111,7 @@ onMounted(() => {
   /* will-change: scroll-position; */
   user-select: none;
   width: 100vw;
-  height: 100vh;
+  /* height: 100vh; */
 
   background-position-x: center;
   background-size: cover;
@@ -109,6 +124,7 @@ onMounted(() => {
   isolation: isolate; /* Without isolation, the background color will be taken into account */
 
   p {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     font-size: 3rem;
     color: #fff;
     text-align: center;
