@@ -1,14 +1,7 @@
 <template>
   <div>
-    <div
-      v-for="(item, index) in imageList"
-      :key="index"
-      :class="`container`"
-      :ref="(el) => (containers[index] = el as HTMLDivElement)"
-      :style="{
-        backgroundImage: `url(${item.src})`,
-      }"
-    >
+    <div v-for="(item, index) in imageList" :key="index" class="image_container">
+      <img :src="item.src" alt="" loading="lazy" />
       <p>{{ item.text }}</p>
     </div>
   </div>
@@ -26,57 +19,35 @@ import ScrollTrigger from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 import { onMounted } from 'vue'
-const onMountedP = new Promise((resolve) => onMounted(resolve))
 
 // 锁定window.innerHeight
-const lockedWindowInnerHeight = window.innerHeight
-const containers: HTMLDivElement[] = []
-const initGsap = async () => {
-  await onMountedP
-  for (let i = 0; i < containers.length; i++) {
-    const container = containers[i]
-    if (!container) continue
-    if (i === 0) {
-      const p = container.querySelector('p')
-      gsap.fromTo(
-        p,
-        {
-          translateY: 0,
-        },
-        {
-          translateY: `-${lockedWindowInnerHeight / 3}px`,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: container,
-            scrub: true,
-            start: 'top top',
-            end: 'bottom top',
+const initGsap = () => {
+  ScrollTrigger.batch('.image_container', {
+    onEnter: (elements) => {
+      elements.forEach((element) => {
+        gsap.fromTo(
+          element.querySelector('img'),
+          {
+            y: `-50%`,
           },
-        },
-      )
-    }
-
-    if (i !== 0) {
-      gsap.fromTo(
-        container,
-        {
-          backgroundPositionY: `-${lockedWindowInnerHeight / 2.5}px`,
-        },
-        {
-          backgroundPositionY: `${lockedWindowInnerHeight / 2.5}px`,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: container,
-            scrub: true,
-            start: 'top bottom',
-            end: 'bottom top',
+          {
+            y: `50%`,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: element,
+              scrub: true,
+              start: 'top bottom',
+              end: 'bottom top',
+            },
           },
-        },
-      )
-    }
-  }
+        )
+      })
+    },
+    start: 'top-30 bottom',
+    end: 'bottom top',
+  })
 }
-initGsap()
+onMounted(initGsap)
 
 import { useDebounceFn, useEventListener } from '@vueuse/core'
 const refreshScrollTrigger = useDebounceFn(() => {
@@ -88,8 +59,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.container {
-  /* will-change: scroll-position; */
+.image_container {
+  overflow: hidden;
   user-select: none;
   width: 100vw;
   height: 100vh;
@@ -98,18 +69,37 @@ onMounted(() => {
   background-size: cover;
   background-repeat: no-repeat;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   isolation: isolate; /* Without isolation, the background color will be taken into account */
 
+  position: relative;
+
   p {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    z-index: 2;
+    height: fit-content;
+
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     font-size: 3rem;
     color: #fff;
     text-align: center;
     mix-blend-mode: difference;
+
+    will-change: transform;
+  }
+
+  img {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    z-index: 1;
+
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    will-change: transform;
   }
 }
 </style>
