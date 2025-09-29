@@ -17,6 +17,11 @@ const router = createRouter({
       name: 'ScrollFade',
       component: () => import('@/views/ScrollFade.vue'),
     },
+    {
+      path: '/FlowTest',
+      name: 'FlowTest',
+      component: () => import('@/views/FlowTest/Index.vue'),
+    },
   ],
 })
 
