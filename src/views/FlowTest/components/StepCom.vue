@@ -1,39 +1,43 @@
 <template>
   <div v-if="visible">
     <h4>{{ title }}</h4>
+    + <input type="number" v-model="num" />
     <button @click="onclickCancel">cancel</button>
     <button @click="onclickConfirm">confirm</button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onErrorCaptured, ref } from 'vue'
 
 defineOptions({
   name: 'FlowTest',
 })
 
-const props = defineProps<{
-  title: string
-  step: number
-}>()
+onErrorCaptured((err) => {
+  rejectFlow!(err)
+  return false // 阻止错误继续传播
+})
 
 const visible = ref(false)
+const num = ref(0)
 
 const onclickConfirm = () => {
   visible.value = false
-  resolveFlow!(input + props.step)
+  resolveFlow!({ confirm: true, value: input + num.value })
 }
 
 const onclickCancel = () => {
   visible.value = false
-  rejectFlow!('用户取消')
+  resolveFlow!({ confirm: false })
 }
 
 let resolveFlow: Parameters<typeof Promise.prototype.then>[0]
 let rejectFlow: Parameters<typeof Promise.prototype.then>[1]
 let input: number = NaN
-const show = (options: { input: number }) => {
+const title = ref('')
+const show = (options: { input: number; title: string }) => {
+  title.value = options.title
   input = options.input
 
   visible.value = true
