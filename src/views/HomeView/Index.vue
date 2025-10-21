@@ -1,13 +1,26 @@
 <template>
   <div>
-    <div v-for="(item, index) in imageList" :key="index" class="image_container">
-      <img :src="item.src" alt="" loading="lazy" />
+    <div
+      v-for="(item, index) in imageList"
+      :key="index"
+      class="image_container"
+      :style="{
+        backgroundImage: `url(${item.src})`,
+      }"
+    >
       <p>{{ item.text }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+if(!CSS?.supports?.('height','1dvh')){
+  alert('您的设备暂时还不支持最新的CSS特性: height，效果可能会不太好哦')
+}
+if(!CSS?.supports?.('mix-blend-mode','difference')){
+  alert('您的设备暂时还不支持最新的CSS特性: mix-blend-mode: difference，效果可能会不太好哦')
+}
+
 defineOptions({
   name: 'HomeView',
 })
@@ -20,18 +33,17 @@ gsap.registerPlugin(ScrollTrigger)
 
 import { onMounted } from 'vue'
 
-// 锁定window.innerHeight
 const initGsap = () => {
   ScrollTrigger.batch('.image_container', {
     onEnter: (elements) => {
       elements.forEach((element) => {
         gsap.fromTo(
-          element.querySelector('img'),
+          element,
           {
-            y: `-50%`,
+            backgroundPositionY: -window.innerHeight / 2 + 'px',
           },
           {
-            y: `50%`,
+            backgroundPositionY: window.innerHeight / 2 + 'px',
             ease: 'none',
             scrollTrigger: {
               trigger: element,
@@ -63,7 +75,7 @@ onMounted(() => {
   overflow: hidden;
   user-select: none;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
 
   background-position-x: center;
   background-size: cover;
@@ -85,21 +97,6 @@ onMounted(() => {
     color: #fff;
     text-align: center;
     mix-blend-mode: difference;
-
-    will-change: transform;
-  }
-
-  img {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    z-index: 1;
-
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-
-    will-change: transform;
   }
 }
 </style>
