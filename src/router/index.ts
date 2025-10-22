@@ -13,11 +13,6 @@ const router = createRouter({
       component: () => import('@/views/HomeView/Index.vue'),
     },
     {
-      path: '/ScrollFade',
-      name: 'ScrollFade',
-      component: () => import('@/views/ScrollFade.vue'),
-    },
-    {
       path: '/FlowTest',
       name: 'FlowTest',
       component: () => import('@/views/FlowTest/Index.vue'),

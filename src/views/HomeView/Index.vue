@@ -5,6 +5,8 @@
       :key="index"
       class="image_container"
       :style="{
+        width: windowWidth + 'px',
+        height: windowHeight + 'px',
         backgroundImage: `url(${item.src})`,
       }"
     >
@@ -14,11 +16,8 @@
 </template>
 
 <script setup lang="ts">
-if(!CSS?.supports?.('height','1dvh')){
-  alert('您的设备暂时还不支持最新的CSS特性: height，效果可能会不太好哦')
-}
-if(!CSS?.supports?.('mix-blend-mode','difference')){
-  alert('您的设备暂时还不支持最新的CSS特性: mix-blend-mode: difference，效果可能会不太好哦')
+if (!CSS?.supports?.('mix-blend-mode', 'difference')) {
+  alert('您使用的浏览器暂时还不支持最新的CSS特性: mix-blend-mode: difference，效果可能不完整')
 }
 
 defineOptions({
@@ -33,6 +32,9 @@ gsap.registerPlugin(ScrollTrigger)
 
 import { onMounted } from 'vue'
 
+import { useWindowSize } from '@vueuse/core'
+const { width: windowWidth, height: windowHeight } = useWindowSize()
+
 const initGsap = () => {
   ScrollTrigger.batch('.image_container', {
     onEnter: (elements) => {
@@ -40,10 +42,11 @@ const initGsap = () => {
         gsap.fromTo(
           element,
           {
-            backgroundPositionY: -window.innerHeight / 2 + 'px',
+            backgroundPositionY: -windowHeight.value / 2 + 'px',
           },
           {
-            backgroundPositionY: window.innerHeight / 2 + 'px',
+            backgroundPositionY: windowHeight.value / 2 + 'px',
+
             ease: 'none',
             scrollTrigger: {
               trigger: element,
@@ -74,8 +77,6 @@ onMounted(() => {
 .image_container {
   overflow: hidden;
   user-select: none;
-  width: 100vw;
-  height: 100dvh;
 
   background-position-x: center;
   background-size: cover;
