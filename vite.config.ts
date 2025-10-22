@@ -4,8 +4,8 @@ import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+import UnpluginInjectPreload from 'unplugin-inject-preload/vite'
 import viteImagemin from 'vite-plugin-imagemin'
-import preload from "vite-plugin-preload"
 
 import path from 'node:path'
 
@@ -15,7 +15,7 @@ const preloadPrefix = 'preload-'
  * @param filePath assetInfo.originalFileName，例如 'src/views/HomeView/assets/img/05.png'
  * @param targetDir 目标目录，例如 'src/views/HomeView/assets/img'
  */
-const isInDirectory=(filePath: string, targetDir: string): boolean =>{
+const isInDirectory = (filePath: string, targetDir: string): boolean => {
   const absoluteFile = path.resolve(filePath)
   const absoluteDir = path.resolve(targetDir)
   const relative = path.relative(absoluteDir, absoluteFile)
@@ -57,11 +57,12 @@ export default defineConfig({
         ],
       },
     }),
-    preload({
-      mode: 'preload',
-      shouldPreload: (chunkInfo) => {
-        return chunkInfo.fileName.startsWith(preloadPrefix)
-      }
+    UnpluginInjectPreload({
+      files: [
+        {
+          outputMatch: new RegExp(`^${preloadPrefix}`),
+        }
+      ]
     })
   ],
   resolve: {
