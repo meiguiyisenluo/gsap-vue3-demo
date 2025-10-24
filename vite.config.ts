@@ -5,7 +5,7 @@ import { defineConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 import UnpluginInjectPreload from 'unplugin-inject-preload/vite'
-import viteImagemin from 'vite-plugin-imagemin'
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 
 import path from 'node:path'
 
@@ -28,34 +28,18 @@ export default defineConfig({
   plugins: [
     vue(),
     vueDevTools(),
-    viteImagemin({
-      disable: false,
-      verbose: true,
-      gifsicle: {
-        optimizationLevel: 7,
-        interlaced: false,
+    ViteImageOptimizer({
+      png: {
+        quality: 80 // 质量（0-100，值越高越清晰，体积越大）
       },
-      optipng: {
-        optimizationLevel: 7,
+      jpeg: { quality: 80 },
+      webp: {
+        quality: 80,
+        lossless: true
       },
-      mozjpeg: {
-        quality: 20,
-      },
-      pngquant: {
-        quality: [0.8, 0.9],
-        speed: 4,
-      },
-      svgo: {
-        plugins: [
-          {
-            name: 'removeViewBox',
-          },
-          {
-            name: 'removeEmptyAttrs',
-            active: false,
-          },
-        ],
-      },
+      avif: { quality: 75 }, // AVIF 压缩率比 WebP 更高，但兼容性稍弱
+      include: /\.(png|jpe?g|svg)$/i, // 仅处理指定格式
+      exclude: /node_modules/ // 排除 node_modules 目录
     }),
     UnpluginInjectPreload({
       files: [
